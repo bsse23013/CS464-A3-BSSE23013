@@ -3,9 +3,10 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     [SerializeField] Transform target;
-    [SerializeField] Vector3 offset = new Vector3(0, 10, -6);
+    [SerializeField] Vector3 offset = new Vector3(0, 5, -9);   // up and behind
     [SerializeField] float smoothTime = 0.3f;
     [SerializeField] float lookAhead = 0.35f;     // seconds
+    [SerializeField] float lookHeight = 1f;       // aim a little above the feet
     Rigidbody targetBody;
     Vector3 velocity;                             // camera SmoothDamp memory
     Vector3 ahead, aheadVelocity;                 // smoothed look-ahead
@@ -25,7 +26,7 @@ public class CameraFollow : MonoBehaviour
         ahead = Vector3.SmoothDamp(ahead, wantedAhead,
                                    ref aheadVelocity, smoothTime);
 
-        Vector3 aim = target.position + ahead;
+        Vector3 aim = target.position + ahead + Vector3.up * lookHeight;
         transform.position = Vector3.SmoothDamp(
             transform.position, aim + offset, ref velocity, smoothTime);
         transform.LookAt(aim);
