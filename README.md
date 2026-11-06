@@ -1,7 +1,7 @@
-# CS464 Assignment 03 · [Your name] · BSSE23013
+# CS464 Assignment 03 · Muhammad Sarmad Ahmad · BSSE23013
 
-- **Video (60–120 s):** [YouTube (unlisted) or Google Drive link]
-- **Started from:** [link to my Assignment 02 repo]: the same project, so the Rigidbody player and camera from Assignment 02 carry on (Active Input Handling is still set to Both).
+- **Video (60–120 s):** https://drive.google.com/file/d/1EQiRTkltev9-jd5DK6LRbSLtIDOberRF/view?usp=sharing
+- **Started from:** New project (Instructions given by sir)
 - **Controls:** WASD or the arrow keys to move, Space to jump
 - **To win a level:** collect the coins the HUD asks for (6 to 9 depending on the level), then step on the green goal. Reaching the goal early only shows a hint.
 
