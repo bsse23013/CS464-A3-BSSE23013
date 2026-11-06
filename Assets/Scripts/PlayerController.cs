@@ -18,6 +18,9 @@ public class PlayerController : MonoBehaviour
     bool isGrounded, wasGrounded, jumpQueued;
     float lastGroundedTime = -1f, lastPressedTime = -1f;
     float airTime;
+    float speedMultiplier = 1f;
+    float noControlUntil;
+    Coroutine boost, squash;
     Vector3 contactPoint, contactNormal;           // for the gizmo
 
     void Awake()
@@ -62,8 +65,8 @@ public class PlayerController : MonoBehaviour
             airTime += Time.deltaTime;
         if (isGrounded && !wasGrounded && airTime > 0.1f)
         {
-            StopAllCoroutines();
-            StartCoroutine(Squash());
+            if (squash != null) StopCoroutine(squash);
+            squash = StartCoroutine(Squash());
         }
         if (isGrounded)
             airTime = 0f;
@@ -72,8 +75,11 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.linearVelocity = new Vector3(
-            move.x * speed, rb.linearVelocity.y, move.z * speed);
+        // a knockback push can't be wiped by steering for knockTime
+        if (Time.time >= noControlUntil)
+            rb.linearVelocity = new Vector3(
+                move.x * speed * speedMultiplier, rb.linearVelocity.y,
+                move.z * speed * speedMultiplier);
 
         if (jumpQueued)
         {
@@ -91,6 +97,29 @@ public class PlayerController : MonoBehaviour
         if (rb.linearVelocity.y < 0f)   // falling: pull harder
             rb.AddForce(Physics.gravity * (fallMultiplier - 1f),
                         ForceMode.Acceleration);
+    }
+
+    public void Knockback(Vector3 push, float seconds)
+    {
+        Vector3 v = rb.linearVelocity;
+        rb.linearVelocity = new Vector3(0f, v.y, 0f);
+        rb.AddForce(push, ForceMode.Impulse);
+        noControlUntil = Time.time + seconds;
+    }
+
+    // the timer runs here, so it outlives the pickup; a second pickup restarts it
+    public void BoostSpeed(float multiplier, float seconds)
+    {
+        if (boost != null) StopCoroutine(boost);
+        boost = StartCoroutine(Boost(multiplier, seconds));
+    }
+
+    IEnumerator Boost(float multiplier, float seconds)
+    {
+        speedMultiplier = multiplier;
+        yield return new WaitForSeconds(seconds);
+        speedMultiplier = 1f;
+        boost = null;
     }
 
     void OnCollisionStay(Collision c)
